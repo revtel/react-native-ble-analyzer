@@ -24,14 +24,14 @@ class Peripheral extends Component {
 
     render() {
         let {expanded} = this.state;
-        let {peripheral, onConnect} = this.props;
+        let {peripheral, onConnect=(() => 0)} = this.props;
         return (
             <View style={{borderBottomColor: 'lightgrey', borderBottomWidth: 1, alignItems: 'stretch'}}>
                 <View style={{flexDirection: 'row', alignItems: 'center', padding: 15}}>
                     <View style={{flex: 1}}>
                         <Text>{`${peripheral.name || 'N/A'}`}</Text>
                         <Text>{`${peripheral.id}`}</Text>
-                        <Text>{`${peripheral.rssi} dBm`}</Text>
+                        <Text>{`${peripheral.rssi || '---'} dBm`}</Text>
                     </View>
 
                     <Btn onPress={() => this.setState({expanded: !expanded})} outline>
