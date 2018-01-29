@@ -1,6 +1,6 @@
 # react-native-ble-analyzer
 
-Open sourced BLE analysis app for iOS and Android, built with React Native.
+(**WIP**) Open source BLE analysis app for iOS and Android, built with React Native.
 
 **Contributions are welcomed!**
 
