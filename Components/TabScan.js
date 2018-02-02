@@ -17,7 +17,6 @@ import Theme from '../Theme'
 import NavBar from './NavBar'
 import Btn from './Btn'
 import Peripheral from './Peripheral'
-import ConnectionPanel from './ConnectionPanel'
 
 let _BleHelper = new BleHelper();
 
@@ -30,10 +29,8 @@ class TabScan extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            connect: false,
             peripherals: {},
             uiState: UiState.idle,
-            connectTo: null,
         };
     }
 
@@ -64,7 +61,8 @@ class TabScan extends Component {
     }
 
     render() {
-        let {connect, peripherals, uiState, connectTo} = this.state;
+        let {onConnect} = this.props;
+        let {peripherals, uiState} = this.state;
 
         return (
             <View style={{flex: 1, paddingTop: Theme.navbarHeight}}>
@@ -95,21 +93,12 @@ class TabScan extends Component {
                                         <Peripheral
                                             key={peripheral.id}
                                             peripheral={peripheral}
-                                            onConnect={connectTo => this.setState({ connect: !connect, connectTo })}
+                                            onConnect={onConnect}
                                         />
                                     )
                                 )
                             }
                         </ScrollView>
-                    )
-                }
-
-                {
-                    connect && (
-                        <ConnectionPanel 
-                            peripheral={connectTo}
-                            onClose={() => this.setState({connect: false})}
-                        />
                     )
                 }
             </View>

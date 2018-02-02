@@ -8,6 +8,7 @@ import {
 import BleManager from 'react-native-ble-manager';
 import JSONTree from 'react-native-json-tree'
 import Btn from './Btn'
+import GattService from './GattService'
 
 class ConnectionPanel extends Component {
     constructor(props) {
@@ -31,6 +32,8 @@ class ConnectionPanel extends Component {
     render() {
         let {onClose, peripheral} = this.props;
         let {connected, connecting, hint, serviceInfo} = this.state;
+        let gattServices = this._restructureServices(serviceInfo);
+        console.log('gattServices', gattServices);
 
         return (
             <View style={{ position: 'absolute', padding: 20, top: 0, left: 0, bottom: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.2)' }}>
@@ -49,16 +52,34 @@ class ConnectionPanel extends Component {
                             <ScrollView style={{ flex: 1 }}>
                                 {hint && <Text>{hint}</Text>}
 
+                                <View>
+                                    <Text style={{ fontWeight: 'bold' }}>{peripheral.name || 'N/A'}</Text>
+                                    <Text style={{ marginBottom: 5, color: 'grey' }}>id: {peripheral.id}</Text>
+                                </View>
+
+                                {gattServices && (
+                                    <View>
+                                        <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>GATT Services</Text>
+                                        {
+                                            gattServices.map(
+                                                s => (
+                                                    <GattService
+                                                        key={s.uuid}
+                                                        service={s}
+                                                    />
+                                                )
+                                            )
+
+                                        }
+                                    </View>
+                                )}
+
                                 {serviceInfo && (
                                     <View>
-                                        <Text style={{ fontWeight: 'bold' }}>{peripheral.name || 'N/A'}</Text>
-                                        <Text style={{ marginBottom: 5, color: 'grey' }}>id: {peripheral.id}</Text>
-                                        <View style={{ backgroundColor: '#ccc', height: 1}}></View>
-
-                                        <Text style={{ marginTop: 10, marginBottom: 5 }}>GATT Services</Text>
+                                       <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Services</Text>
                                         <JSONTree data={serviceInfo.services} />
 
-                                        <Text style={{ marginTop: 10, marginBottom: 5 }}>GATT Characteristics</Text>
+                                        <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Characteristics</Text>
                                         <JSONTree data={serviceInfo.characteristics} />
                                     </View>
                                 )}
@@ -120,6 +141,7 @@ class ConnectionPanel extends Component {
                 return BleManager.retrieveServices(peripheral.id)
             })
             .then(serviceInfo => {
+                console.log(serviceInfo);
                 this.setState({
                     connecting: false,
                     connected: true,
@@ -135,7 +157,24 @@ class ConnectionPanel extends Component {
                 })
                 BleManager.disconnect(peripheral.id); // ignore failure
             })
+    }
 
+    _restructureServices = (serviceInfo) => {
+        if (!serviceInfo) {
+            return null;
+        }
+
+        let {characteristics, services} = serviceInfo;
+        return services.reduce(
+            (acc, service) => {
+                acc.push({
+                    ...service, 
+                    chars: characteristics.filter(c => c.service === service.uuid)
+                });
+                return acc;
+            },
+            []
+        );
     }
 
     _tryDisconnect = () => {

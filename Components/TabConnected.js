@@ -12,7 +12,6 @@ import Theme from '../Theme'
 import NavBar from './NavBar'
 import Btn from './Btn'
 import Peripheral from './Peripheral'
-import ConnectionPanel from './ConnectionPanel'
 
 const UiState = {
     idle: 0,
@@ -25,13 +24,12 @@ class TabConnected extends Component {
         this.state = {
             uiState: UiState.idle,
             peripherals: [],
-            connect: false,
-            connectTo: null,
         };
     }
 
     render() {
-        let { uiState, peripherals, connect, connectTo } = this.state;
+        let { onConnect } = this.props;
+        let { uiState, peripherals } = this.state;
 
         return (
             <View style={{flex: 1, paddingTop: Theme.navbarHeight}}>
@@ -62,21 +60,12 @@ class TabConnected extends Component {
                                         <Peripheral
                                             key={peripheral.id}
                                             peripheral={peripheral}
-                                            onConnect={connectTo => this.setState({ connect: !connect, connectTo })}
+                                            onConnect={onConnect}
                                         />
                                     )
                                 )
                             }
                         </ScrollView>
-                    )
-                }
-
-                {
-                    connect && (
-                        <ConnectionPanel 
-                            peripheral={connectTo}
-                            onClose={() => this.setState({connect: false})}
-                        />
                     )
                 }
             </View>
