@@ -8,7 +8,7 @@ import GattChar from './GattChar'
 
 class GattService extends Component {
     render() {
-        let {service: {uuid, chars=[]}, extraStyle={}} = this.props;
+        let {service: {uuid, chars=[]}, peripheral, extraStyle={}} = this.props;
 
         return (
             <View style={{padding: 10, borderTopColor: '#ccc', borderTopWidth: 1, ...extraStyle}}>
@@ -18,8 +18,10 @@ class GattService extends Component {
                         chars.map(
                             c => (
                                 <GattChar
-                                    char={c}
                                     key={c.characteristic}
+                                    char={c}
+                                    serviceUuid={uuid}
+                                    peripheral={peripheral}
                                 />
                             )
                         )

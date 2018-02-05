@@ -12,13 +12,11 @@ import {
     NativeEventEmitter,
 } from 'react-native'
 import BleManager from 'react-native-ble-manager';
-import BleHelper from '../BleHelper'
+import _BleHelper from '../BleHelper'
 import Theme from '../Theme'
 import NavBar from './NavBar'
 import Btn from './Btn'
 import Peripheral from './Peripheral'
-
-let _BleHelper = new BleHelper();
 
 const UiState = {
     idle: 0,

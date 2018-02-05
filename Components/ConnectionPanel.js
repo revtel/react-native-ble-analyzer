@@ -4,6 +4,7 @@ import {
     Text,
     ScrollView,
     ActivityIndicator,
+    Platform,
 } from 'react-native'
 import BleManager from 'react-native-ble-manager';
 import JSONTree from 'react-native-json-tree'
@@ -66,6 +67,7 @@ class ConnectionPanel extends Component {
                                                     <GattService
                                                         key={s.uuid}
                                                         service={s}
+                                                        peripheral={peripheral}
                                                     />
                                                 )
                                             )
@@ -165,16 +167,31 @@ class ConnectionPanel extends Component {
         }
 
         let {characteristics, services} = serviceInfo;
-        return services.reduce(
-            (acc, service) => {
-                acc.push({
-                    ...service, 
-                    chars: characteristics.filter(c => c.service === service.uuid)
-                });
-                return acc;
-            },
-            []
-        );
+        if (Platform.OS === 'ios') {
+            // in ios, the services array is just a array of string 
+            // and each string is the uuid of that service, not an object
+            return services.reduce(
+                (acc, service) => {
+                    acc.push({
+                        uuid: service, 
+                        chars: characteristics.filter(c => c.service === service)
+                    });
+                    return acc;
+                },
+                []
+            );
+        } else { // android
+            return services.reduce(
+                (acc, service) => {
+                    acc.push({
+                        ...service,
+                        chars: characteristics.filter(c => c.service === service.uuid)
+                    });
+                    return acc;
+                },
+                []
+            );
+        }
     }
 
     _tryDisconnect = () => {

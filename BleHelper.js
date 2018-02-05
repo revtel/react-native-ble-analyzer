@@ -33,6 +33,25 @@ class BleHelper {
         )
     }
 
+    registerNotification(peripheralId, serviceId, charId, callback) {
+        return new Promise(
+            (resolve, reject) => {
+                BleManager.startNotification(peripheralId, serviceId, charId)
+                    .then(() => {
+                        resolve(bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', callback));
+                    })
+                    .catch(err => {
+                        console.warn('BleHelper registerNotification', err);
+                        reject(err)
+                    })
+            }
+        )
+    }
+
+    unregisterNotification(handle) {
+        handle.remove();
+    }
+
     registerListener({onDiscovery=null, onStopScan=null}) {
         if (onDiscovery) {
             if (this.onDiscoveryHandler) {
@@ -55,4 +74,4 @@ class BleHelper {
     }
 }
 
-export default BleHelper;
+export default new BleHelper();
