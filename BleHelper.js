@@ -5,6 +5,7 @@ import {
     PermissionsAndroid,
 } from 'react-native'
 import BleManager from 'react-native-ble-manager';
+import {throttle} from 'lodash';
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
@@ -57,6 +58,7 @@ class BleHelper {
             if (this.onDiscoveryHandler) {
                 throw new Error('you should only register one listener using this helper method at a time');
             }
+            onDiscovery = throttle(onDiscovery, 250);
             this.onDiscoveryHandler = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', onDiscovery);
         }
 
