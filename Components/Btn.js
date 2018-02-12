@@ -7,10 +7,10 @@ import Theme from '../Theme'
 
 class Btn extends Component {
     render() {
-        let {outline=false} = this.props;
+        let {outline=false, extraStyle={}} = this.props;
         return (
             <TouchableOpacity 
-                    style={{borderWidth: 1, borderRadius: 5, borderColor: Theme.color, padding: 10, backgroundColor: outline ? 'white' : Theme.color}}
+                    style={{borderWidth: 1, borderRadius: 5, borderColor: Theme.color, padding: 10, backgroundColor: outline ? 'white' : Theme.color, ...extraStyle}}
                     onPress={this.props.onPress}>
                     <Text style={{color: outline ? Theme.color : 'white'}}>{this.props.children}</Text>
             </TouchableOpacity>
