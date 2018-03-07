@@ -100,8 +100,8 @@ class ConnectionPanel extends Component {
                     {
                         !connecting && (
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
-                                <Btn onPress={connected ? this._tryDisconnect : this._tryConnect}>
-                                    {`${connected ? 'Disconnect' : 'Connect'}`}
+                                <Btn onPress={connected ? this._tryDisconnectAndClose : this._tryConnect}>
+                                    {`${connected ? 'Disconnect & Close' : 'Connect'}`}
                                 </Btn>
 
                                 <View style={{ width: 15 }}></View>
@@ -194,13 +194,15 @@ class ConnectionPanel extends Component {
         }
     }
 
-    _tryDisconnect = () => {
-        let {peripheral} = this.props;
+    _tryDisconnectAndClose = () => {
+        let {peripheral, onClose} = this.props;
         this.setState({
             ...this.initialState,
             hint: 'Not connected'
         });
-        BleManager.disconnect(peripheral.id); // ignore failure
+        BleManager.disconnect(peripheral.id)
+            .catch(() => 0)
+            .then(onClose);
     }
 }
 
