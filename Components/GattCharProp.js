@@ -52,19 +52,19 @@ class GattCharProp extends Component {
         if (property === 'Read') {
             return (
                 <View style={{ padding: 5, flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ flex: 1 }} onPress={this._doOperation}>
+                    <TouchableOpacity style={{marginRight: 5}} onPress={this._doOperation}>
                         <Text style={{ flex: 1, color: 'blue' }}>{property}</Text>
                     </TouchableOpacity>
-                    <Text style={{color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.charValue}</Text>
+                    <Text style={{flex: 1, textAlign: 'right', color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.charValue}</Text>
                 </View>
             )
         } else if (property.indexOf('Notify') === 0 || property.indexOf('Indicate') === 0) {
             return (
                 <View style={{ padding: 5, flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ flex: 1 }} onPress={this._doOperation}>
+                    <TouchableOpacity style={{marginRight: 5}} onPress={this._doOperation}>
                         <Text style={{ flex: 1, color: 'blue' }}>{property}</Text>
                     </TouchableOpacity>
-                    <Text style={{color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.notifyValue}</Text>
+                    <Text style={{flex: 1, textAlign: 'right', color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.notifyValue}</Text>
                 </View>
             )
         } else if (property.indexOf('Write') === 0) {
@@ -108,6 +108,8 @@ class GattCharProp extends Component {
             BleManager.read(peripheral.id, serviceUuid, char.characteristic)
                 .then(data => {
                     console.log(data);
+                    this.charValue = JSON.stringify(data);
+                    this.forceUpdate();
                 })
                 .catch(err => {
                     console.warn(err);
@@ -154,20 +156,26 @@ class GattCharProp extends Component {
         console.log(value);
         let valueToDisplay = '???';
 
+        // try {
+        //     valueToDisplay = value.reduce(
+        //         (acc, v) => {
+        //             return acc + String.fromCharCode(v)
+        //         },
+        //         ''
+        //     );
+        // } catch (ex) {
+        //     valueToDisplay = value.reduce(
+        //         (acc, v) => {
+        //             return `${acc} ${('00' + v.toString(16)).slice(-2)}(${v.toString()})`;
+        //         },
+        //         ''
+        //     )
+        // }
+
         try {
-            valueToDisplay = value.reduce(
-                (acc, v) => {
-                    return acc + String.fromCharCode(v)
-                },
-                ''
-            );
+            valueToDisplay = JSON.stringify(value);
         } catch (ex) {
-            valueToDisplay = value.reduce(
-                (acc, v) => {
-                    return `${acc} ${('00' + v.toString(16)).slice(-2)}(${v.toString()})`;
-                },
-                ''
-            )
+            console.warn(ex);
         }
 
         this.notifyValue = valueToDisplay;
