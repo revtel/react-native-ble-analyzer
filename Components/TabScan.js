@@ -70,7 +70,7 @@ class TabScan extends Component {
                 />
 
                 <NavBar>
-                    <Text style={{color: 'white', fontSize: 20, width: 100, textAlign: 'left', flex: 1}}>Open BLE Analyzer</Text>
+                    <Text style={{color: 'white', fontSize: 20, width: 100, textAlign: 'left', flex: 1}}>React Native BLE Analyzer</Text>
                     { this._renderScanButton() }
                 </NavBar>
 
@@ -78,8 +78,8 @@ class TabScan extends Component {
                     Object.keys(peripherals).length === 0 ? (
                         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                             { uiState === UiState.scanning && <ActivityIndicator size='large' color={Theme.color}/> }
-                            <Text style={{marginBottom: 10}}>
-                                Currently no peripherals found
+                            <Text style={{marginBottom: 10, fontSize: 18, color: '#999'}}>
+                                No Result
                             </Text>
                             { uiState === UiState.idle && <Btn onPress={this._doScan}>Scan Now</Btn> }
                         </View>

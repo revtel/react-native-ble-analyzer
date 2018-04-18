@@ -29,13 +29,16 @@ class Peripheral extends Component {
             <View style={{borderBottomColor: 'lightgrey', borderBottomWidth: 1, alignItems: 'stretch'}}>
                 <View style={{flexDirection: 'row', alignItems: 'center', padding: 15}}>
                     <View style={{flex: 1}}>
-                        <Text>{`${peripheral.name || 'N/A'}`}</Text>
-                        <Text>{`${peripheral.id}`}</Text>
-                        <Text>{`${peripheral.rssi || '---'} dBm`}</Text>
+                        <Text style={{fontSize: 20, color: '#888'}}>{`${peripheral.name || 'N/A'}`}</Text>
+                        <Text style={{color: '#ccc'}}>{`${peripheral.rssi || '---'} dBm`}</Text>
                     </View>
 
-                    <Btn onPress={() => this.setState({expanded: !expanded})} outline>
-                        {`${expanded ? 'See Less' : 'See More'}`}
+                    <Btn 
+                        onPress={() => this.setState({expanded: !expanded})} 
+                        extraStyle={{width: 72, justifyContent: 'center', alignItems: 'center'}}
+                        outline
+                    >
+                        {`${expanded ? 'LESS' : 'MORE'}`}
                     </Btn>
                 </View>
 
@@ -51,7 +54,7 @@ class Peripheral extends Component {
 
                             <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                                 <Btn onPress={() => onConnect(peripheral)}>
-                                    {`Connect`}
+                                    {`CONNECT`}
                                 </Btn>
                             </View>
                         </View>

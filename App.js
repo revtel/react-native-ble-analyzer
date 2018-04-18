@@ -9,12 +9,14 @@ import {
 import TabNavigator from 'react-native-tab-navigator';
 import Theme from './Theme'
 import TabScan from './Components/TabScan'
-import TabConnected from './Components/TabConnected'
+import TabFeatures from './Components/TabFeatures'
+import TabSetting from './Components/TabSetting'
 import ConnectionPanel from './Components/ConnectionPanel'
 
 const Tabs = {
     scan: 0,
-    connected: 1,
+    features: 1,
+    setting: 2,
 }
 
 class App extends Component {
@@ -34,17 +36,24 @@ class App extends Component {
                 <TabNavigator>
                     <TabNavigator.Item
                         selected={selectedTab === Tabs.scan}
-                        renderIcon={() => <Text style={{color: '#ccc'}}>Scan</Text>}
-                        renderSelectedIcon={() => <Text style={{fontWeight: 'bold', color: Theme.color}}>Scan</Text>}
+                        renderIcon={() => <Text style={{color: '#ccc'}}>SCAN</Text>}
+                        renderSelectedIcon={() => <Text style={{fontWeight: 'bold', color: Theme.color}}>SCAN</Text>}
                         onPress={() => this.setState({ selectedTab: Tabs.scan })}>
                         <TabScan onConnect={connectTo => this.setState({connectTo})}/>
                     </TabNavigator.Item>
                     <TabNavigator.Item
-                        selected={selectedTab === Tabs.connected}
-                        renderIcon={() => <Text style={{color: '#ccc'}}>Connected</Text>}
-                        renderSelectedIcon={() => <Text style={{fontWeight: 'bold', color: Theme.color}}>Connected</Text>}
-                        onPress={() => this.setState({ selectedTab: Tabs.connected })}>
-                        <TabConnected onConnect={connectTo => this.setState({connectTo})}/>
+                        selected={selectedTab === Tabs.features}
+                        renderIcon={() => <Text style={{color: '#ccc'}}>FEATURES</Text>}
+                        renderSelectedIcon={() => <Text style={{fontWeight: 'bold', color: Theme.color}}>FEATURES</Text>}
+                        onPress={() => this.setState({ selectedTab: Tabs.features })}>
+                        <TabFeatures onConnect={connectTo => this.setState({connectTo})}/>
+                    </TabNavigator.Item>
+                    <TabNavigator.Item
+                        selected={selectedTab === Tabs.setting}
+                        renderIcon={() => <Text style={{color: '#ccc'}}>SETTING</Text>}
+                        renderSelectedIcon={() => <Text style={{fontWeight: 'bold', color: Theme.color}}>SETTING</Text>}
+                        onPress={() => this.setState({ selectedTab: Tabs.setting })}>
+                        <TabSetting />
                     </TabNavigator.Item>
                 </TabNavigator>
 

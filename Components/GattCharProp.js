@@ -48,6 +48,8 @@ class GattCharProp extends Component {
 
     render() {
         let {property} = this.props;
+        let displayCharValue = this._formatValue(this.charValue);
+        let displayNotifyValue = this._formatValue(this.notifyValue);
 
         if (property === 'Read') {
             return (
@@ -55,16 +57,24 @@ class GattCharProp extends Component {
                     <TouchableOpacity style={{marginRight: 5}} onPress={this._doOperation}>
                         <Text style={{ flex: 1, color: 'blue' }}>{property}</Text>
                     </TouchableOpacity>
-                    <Text style={{flex: 1, textAlign: 'right', color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.charValue}</Text>
+                    <Text style={{flex: 1, textAlign: 'right', color: !!this.notifyHandle ? 'blue' : 'black'}}>{displayCharValue}</Text>
                 </View>
             )
         } else if (property.indexOf('Notify') === 0 || property.indexOf('Indicate') === 0) {
             return (
-                <View style={{ padding: 5, flexDirection: 'row' }}>
-                    <TouchableOpacity style={{marginRight: 5}} onPress={this._doOperation}>
-                        <Text style={{ flex: 1, color: 'blue' }}>{property}</Text>
-                    </TouchableOpacity>
-                    <Text style={{flex: 1, textAlign: 'right', color: !!this.notifyHandle ? 'blue' : 'black'}}>{this.notifyValue}</Text>
+                <View style={{padding: 5}}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{marginRight: 5}} onPress={this._doOperation}>
+                            <Text style={{ flex: 1, color: 'blue' }}>{property}</Text>
+                        </TouchableOpacity>
+                        <Text style={{flex: 1, textAlign: 'right'}}>{displayNotifyValue}</Text>
+                    </View>
+
+                    {!!this.notifyHandle && (
+                        <TouchableOpacity style={{ marginTop: 5, flexDirection: 'row', justifyContent: 'flex-end' }} onPress={this._doOperation}>
+                            <Text style={{color: 'blue'}}>Unsubscribe</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             )
         } else if (property.indexOf('Write') === 0) {
@@ -77,11 +87,9 @@ class GattCharProp extends Component {
                     </TouchableOpacity>
                     <View style={{marginTop: 5, paddingTop: 5, paddingLeft: 20, alignItems: 'stretch'}}>
                         <TextInput
-                            multiline={true}
-                            numberOfLines={2}
                             value={valueToWrite}
                             onChangeText={valueToWrite => this.setState({valueToWrite})}
-                            style={{ borderWidth: 1, borderColor: 'lightblue', marginBottom: 5 }}
+                            style={{ borderWidth: 1, borderColor: 'lightblue', marginBottom: 5, height: 30 }}
                         />
                         <View style={{flexDirection: 'row', marginTop: 5, justifyContent: 'flex-end'}}>
                             <Btn onPress={this._doOperation} extraStyle={{marginRight: 5}} >Send</Btn>
@@ -102,13 +110,13 @@ class GattCharProp extends Component {
     }
 
     _doOperation = () => {
-        let {peripheral, serviceUuid, char, property} = this.props;
+        let {peripheral, serviceUuid, char, property, format} = this.props;
 
         if (property === 'Read') {
             BleManager.read(peripheral.id, serviceUuid, char.characteristic)
                 .then(data => {
                     console.log(data);
-                    this.charValue = JSON.stringify(data);
+                    this.charValue = data;
                     this.forceUpdate();
                 })
                 .catch(err => {
@@ -128,18 +136,7 @@ class GattCharProp extends Component {
                 this.forceUpdate();
             }
         } else if (property.indexOf('Write') === 0) {
-            let {valueToWrite} = this.state;
-            let bytes = [];
-
-            if (!valueToWrite) {
-                return;
-            }
-
-            // ascii
-            for (let i = 0; i < valueToWrite.length; i++) {
-                bytes.push(valueToWrite.charCodeAt(i));
-            }
-
+            let bytes = this._formatValueToWrite();
             if (property === 'Write') {
                 BleManager.write(peripheral.id, serviceUuid, char.characteristic, bytes, bytes.length)
                     .then(result => 0)
@@ -152,25 +149,63 @@ class GattCharProp extends Component {
         }
     }
 
-    _onCharValueUpdate = ({value}) => {
-        console.log(value);
-        let valueToDisplay = '???';
+    _formatValueToWrite = () => {
+        let {format} = this.props;
+        let {valueToWrite} = this.state;
+        let bytes = [];
 
-        // try {
-        //     valueToDisplay = value.reduce(
-        //         (acc, v) => {
-        //             return acc + String.fromCharCode(v)
-        //         },
-        //         ''
-        //     );
-        // } catch (ex) {
-        //     valueToDisplay = value.reduce(
-        //         (acc, v) => {
-        //             return `${acc} ${('00' + v.toString(16)).slice(-2)}(${v.toString()})`;
-        //         },
-        //         ''
-        //     )
-        // }
+        if (!valueToWrite) {
+            return null;
+        }
+
+        try {
+            if (format === 'ASCII') {
+                for (let i = 0; i < valueToWrite.length; i++) {
+                    bytes.push(valueToWrite.charCodeAt(i));
+                }
+            } else if (format === 'DEC') {
+                bytes = valueToWrite.split().map(v => parseInt(v, 10));
+            } else if (format === 'HEX') {
+                bytes = valueToWrite.split().map(v => parseInt(v, 16));
+            }
+        } catch (ex) {
+            console.warn(ex);
+            return null;
+        }
+
+        return bytes;
+    }
+
+    _formatValue = data => {
+        // TODO: this is bad, remove it later
+        if (data === '---') {
+            return data;
+        }
+
+        let {format} = this.props;
+        try {
+            switch (format) {
+                case 'DEC':
+                    return (
+                        data && data.map(v => v.toString(10)).reduce((acc, v) => `${acc} ${v}`, '')
+                    ) || '???';
+                case 'HEX':
+                    return ( 
+                        data && data.map(v => v.toString(16)).reduce((acc, v) => `${acc} ${v}`, '')
+                    ) || '???';
+                case 'ASCII':
+                    return (
+                        data && data.map(v => String.fromCharCode(v)).reduce((acc, v) => `${acc}${v}`, '')
+                    ) || '???';
+            } 
+        } catch (ex) {
+            return JSON.stringify(data) + '(fail to parse)';
+        }
+        return JSON.stringify(data);
+    }
+
+    _onCharValueUpdate = ({value}) => {
+        let valueToDisplay = '???';
 
         try {
             valueToDisplay = JSON.stringify(value);

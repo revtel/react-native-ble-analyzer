@@ -22,6 +22,7 @@ class GattService extends Component {
                                     char={c}
                                     serviceUuid={uuid}
                                     peripheral={peripheral}
+                                    extraStyle={{marginBottom: 10}}
                                 />
                             )
                         )

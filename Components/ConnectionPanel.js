@@ -10,6 +10,7 @@ import BleManager from 'react-native-ble-manager';
 import JSONTree from 'react-native-json-tree'
 import Btn from './Btn'
 import GattService from './GattService'
+import Theme from '../Theme';
 
 class ConnectionPanel extends Component {
     constructor(props) {
@@ -36,6 +37,8 @@ class ConnectionPanel extends Component {
         let gattServices = this._restructureServices(serviceInfo);
         console.log('gattServices', gattServices);
 
+        let kbViewProps = Platform.OS === 'ios' ? {behavior: 'position'} : {};
+
         return (
             <View style={{ position: 'absolute', padding: 20, top: 0, left: 0, bottom: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.2)' }}>
                 <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: 'white', padding: 20}}>
@@ -51,40 +54,40 @@ class ConnectionPanel extends Component {
                     {
                         connected && (
                             <ScrollView style={{ flex: 1 }}>
-                                {hint && <Text>{hint}</Text>}
+                                    {hint && <Text>{hint}</Text>}
 
-                                <View>
-                                    <Text style={{ fontWeight: 'bold' }}>{peripheral.name || 'N/A'}</Text>
-                                    <Text style={{ marginBottom: 5, color: 'grey' }}>id: {peripheral.id}</Text>
-                                </View>
-
-                                {gattServices && (
                                     <View>
-                                        <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>GATT Services</Text>
-                                        {
-                                            gattServices.map(
-                                                s => (
-                                                    <GattService
-                                                        key={s.uuid}
-                                                        service={s}
-                                                        peripheral={peripheral}
-                                                    />
+                                        <Text style={{ fontWeight: 'bold' }}>{peripheral.name || 'N/A'}</Text>
+                                        <Text style={{ marginBottom: 5, color: 'grey' }}>id: {peripheral.id}</Text>
+                                    </View>
+
+                                    {gattServices && (
+                                        <View>
+                                            <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>GATT Services</Text>
+                                            {
+                                                gattServices.map(
+                                                    s => (
+                                                        <GattService
+                                                            key={s.uuid}
+                                                            service={s}
+                                                            peripheral={peripheral}
+                                                        />
+                                                    )
                                                 )
-                                            )
 
-                                        }
-                                    </View>
-                                )}
+                                            }
+                                        </View>
+                                    )}
 
-                                {serviceInfo && (
-                                    <View>
-                                       <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Services</Text>
-                                        <JSONTree data={serviceInfo.services} />
+                                    {serviceInfo && (
+                                        <View>
+                                            <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Services</Text>
+                                            <JSONTree data={serviceInfo.services} />
 
-                                        <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Characteristics</Text>
-                                        <JSONTree data={serviceInfo.characteristics} />
-                                    </View>
-                                )}
+                                            <Text style={{ fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>(Raw JSON) Characteristics</Text>
+                                            <JSONTree data={serviceInfo.characteristics} />
+                                        </View>
+                                    )}
                             </ScrollView>
                         )
                     }
@@ -99,7 +102,7 @@ class ConnectionPanel extends Component {
                     
                     {
                         !connecting && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 15, borderTopWidth: 1, borderTopColor: Theme.color }}>
                                 <Btn onPress={connected ? this._tryDisconnectAndClose : this._tryConnect}>
                                     {`${connected ? 'Disconnect & Close' : 'Connect'}`}
                                 </Btn>
