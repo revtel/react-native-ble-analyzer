@@ -32,11 +32,14 @@ By the way, in this app we use [**react-native-ble-manager**](https://github.com
 
 ## Sceenshots
 
-<img src="screenshots/ios1.PNG" width="200">
-<img src="screenshots/ios2.PNG" width="200">
-<img src="screenshots/ios3.PNG" width="200">
-<img src="screenshots/ios4.PNG" width="200">
-<img src="screenshots/ios5.PNG" width="200">
+<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+    <img src="screenshots/ios1.PNG" width="270" height="480" style="margin: 10px">
+    <img src="screenshots/ios2.PNG" width="270" height="480" style="margin: 10px">
+    <img src="screenshots/ios3.PNG" width="270" height="480" style="margin: 10px">
+    <img src="screenshots/ios4.PNG" width="270" height="480" style="margin: 10px">
+    <img src="screenshots/ios5.PNG" width="270" height="480" style="margin: 10px">
+</div>
+<br />
 
 ## Conclusion
 
