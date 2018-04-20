@@ -121,7 +121,7 @@ class TabScan extends Component {
         }
 
         this.setState({ uiState: UiState.scanning, peripherals: {} });
-        BleManager.scan([], 10, true)
+        BleManager.scan([], 20, true)
             .then(results => {
                 console.log('Scanning...');
             })
