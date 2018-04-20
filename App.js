@@ -12,6 +12,7 @@ import TabScan from './Components/TabScan'
 import TabFeatures from './Components/TabFeatures'
 import TabSetting from './Components/TabSetting'
 import ConnectionPanel from './Components/ConnectionPanel'
+import ErrorMessagePanel, {ErrorRegistry} from './Components/ErrorMessagePanel'
 
 const Tabs = {
     scan: 0,
@@ -64,6 +65,10 @@ class App extends Component {
                             onClose={() => this.setState({connectTo: null})}
                         />
                     )
+                }
+
+                {
+                    <ErrorMessagePanel />
                 }
             </View>
         )

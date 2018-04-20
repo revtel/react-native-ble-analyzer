@@ -11,6 +11,7 @@ import JSONTree from 'react-native-json-tree'
 import Btn from './Btn'
 import GattService from './GattService'
 import Theme from '../Theme';
+import {ErrorRegistry} from './ErrorMessagePanel'
 
 class ConnectionPanel extends Component {
     constructor(props) {
@@ -136,6 +137,7 @@ class ConnectionPanel extends Component {
                 });
             })
             .catch(err => {
+                ErrorRegistry.putError('BLE Connect', err);
                 this.setState({
                     connected: false,
                     connecting: false,
@@ -185,7 +187,9 @@ class ConnectionPanel extends Component {
             hint: 'Not connected'
         });
         BleManager.disconnect(peripheral.id)
-            .catch(() => 0)
+            .catch(err => {
+                ErrorRegistry.putError('BLE Disconnect', err);
+            })
             .then(onClose);
     }
 }

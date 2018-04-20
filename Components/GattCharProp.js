@@ -9,6 +9,7 @@ import {
 import BleHelper from '../BleHelper'
 import BleManager from 'react-native-ble-manager'
 import Btn from './Btn'
+import {ErrorRegistry} from './ErrorMessagePanel'
 
 /** 
     common
@@ -121,6 +122,7 @@ class GattCharProp extends Component {
                 })
                 .catch(err => {
                     console.warn(err);
+                    ErrorRegistry.putError('GATT Read', err);
                 })
         } else if (property.indexOf('Notify') === 0 || property.indexOf('Indicate') === 0) {
             if (!this.notifyHandle) {
@@ -129,9 +131,16 @@ class GattCharProp extends Component {
                         this.notifyHandle = handle;
                         this.forceUpdate();
                     })
-                    .catch(err => console.warn(err));
+                    .catch(err => {
+                        console.warn(err)
+                        ErrorRegistry.putError('GATT Register Notification', err);
+                    });
             } else {
-                BleHelper.unregisterNotification(this.notifyHandle);
+                BleHelper.unregisterNotification(this.notifyHandle)
+                    .catch(err => {
+                        console.warn(err)
+                        ErrorRegistry.putError('GATT Unregister Notification', err);
+                    })
                 this.notifyHandle = null;
                 this.forceUpdate();
             }
@@ -140,11 +149,17 @@ class GattCharProp extends Component {
             if (property === 'Write') {
                 BleManager.write(peripheral.id, serviceUuid, char.characteristic, bytes, bytes.length)
                     .then(result => 0)
-                    .catch(err => console.warn(err))
+                    .catch(err => {
+                        console.warn(err);
+                        ErrorRegistry.putError('GATT Write', err);
+                    })
             } else { // without response
                 BleManager.writeWithoutResponse(peripheral.id, serviceUuid, char.characteristic, bytes, bytes.length)
                     .then(result => 0)
-                    .catch(err => console.warn(err))
+                    .catch(err => {
+                        console.warn(err);
+                        ErrorRegistry.putError('GATT WriteWithourResponse', err);
+                    })
             }
         }
     }
