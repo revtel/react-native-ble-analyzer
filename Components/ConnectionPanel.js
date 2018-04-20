@@ -93,27 +93,17 @@ class ConnectionPanel extends Component {
                     }
 
                     {
-                        !connecting && !connected && (
-                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                                <Text>{hint}</Text>
-                            </View>
-                        )
-                    }
-                    
-                    {
-                        !connecting && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 15, borderTopWidth: 1, borderTopColor: Theme.color }}>
-                                <Btn onPress={connected ? this._tryDisconnectAndClose : this._tryConnect}>
-                                    {`${connected ? 'Disconnect & Close' : 'Connect'}`}
-                                </Btn>
-
-                                <View style={{ width: 15 }}></View>
-
-                                <Btn onPress={onClose} outline>
-                                    Close
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 15, borderTopWidth: 1, borderTopColor: Theme.color }}>
+                            <Btn onPress={(connected || connecting) ? this._tryDisconnectAndClose : this._tryConnect}>
+                                {`${(connected || connecting) ? 'Disconnect & Close' : 'Connect'}`}
                             </Btn>
-                            </View>
-                        )
+
+                            <View style={{ width: 15 }}></View>
+
+                            <Btn onPress={onClose} outline>
+                                Close
+                            </Btn>
+                        </View>
                     }
                 </View>
             </View>
@@ -131,16 +121,7 @@ class ConnectionPanel extends Component {
             hint: 'Connecting...',
         });
 
-        // BleManager.getConnectedPeripherals(peripherals => {
-        //     if (peripherals.find(p => p.id === peripheral.id)) {
-        //         this.setState({hint: 'Already connected, skip the connectioin...'})
-        //         return;
-        //     }
-        //     this.setState({hint: 'Connecting...'})
-        //     return BleManager.connect(peripheral.id);
-        // })
         BleManager.connect(peripheral.id)
-            .then(() => new Promise(resolve => setTimeout(resolve, 1200)))
             .then(() => {
                 this.setState({hint: 'Retrieving GATT services...'})
                 return BleManager.retrieveServices(peripheral.id)
